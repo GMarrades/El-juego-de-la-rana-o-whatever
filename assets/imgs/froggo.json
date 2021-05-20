@@ -25,7 +25,7 @@
 	"sourceSize": {"w":150,"h":150}
 },
 {
-	"filename": "walk_1.png",
+	"filename": "Ljump_1.png",
 	"frame": {"x":450,"y":0,"w":150,"h":150},
 	"rotated": false,
 	"trimmed": false,
@@ -33,7 +33,7 @@
 	"sourceSize": {"w":150,"h":150}
 },
 {
-	"filename": "walk_2.png",
+	"filename": "Ljump_2.png",
 	"frame": {"x":600,"y":0,"w":150,"h":150},
 	"rotated": false,
 	"trimmed": false,
@@ -41,8 +41,56 @@
 	"sourceSize": {"w":150,"h":150}
 },
 {
-	"filename": "walk_3.png",
+	"filename": "Ljump_3.png",
 	"frame": {"x":750,"y":0,"w":150,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":150,"h":150},
+	"sourceSize": {"w":150,"h":150}
+},
+{
+	"filename": "Lwalk_1.png",
+	"frame": {"x":900,"y":0,"w":150,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":150,"h":150},
+	"sourceSize": {"w":150,"h":150}
+},
+{
+	"filename": "Lwalk_2.png",
+	"frame": {"x":1050,"y":0,"w":150,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":150,"h":150},
+	"sourceSize": {"w":150,"h":150}
+},
+{
+	"filename": "Lwalk_3.png",
+	"frame": {"x":1200,"y":0,"w":150,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":150,"h":150},
+	"sourceSize": {"w":150,"h":150}
+},
+{
+	"filename": "walk_1.png",
+	"frame": {"x":1350,"y":0,"w":150,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":150,"h":150},
+	"sourceSize": {"w":150,"h":150}
+},
+{
+	"filename": "walk_2.png",
+	"frame": {"x":1500,"y":0,"w":150,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":150,"h":150},
+	"sourceSize": {"w":150,"h":150}
+},
+{
+	"filename": "walk_3.png",
+	"frame": {"x":1650,"y":0,"w":150,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":150,"h":150},
@@ -53,8 +101,8 @@
 	"version": "1.0",
 	"image": "froggo.png",
 	"format": "RGBA8888",
-	"size": {"w":900,"h":150},
+	"size": {"w":1800,"h":150},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:062a87465f10d9cd582bbc52af4a6574:fd344845098d57666bb4b09bfca86e60:74aa022be7642edb4cd206caa81beae2$"
+	"smartupdate": "$TexturePacker:SmartUpdate:b107c4edae0d3c84e6d5ed4779e3475c:c80a882a7df823f1765627e28fd7989f:74aa022be7642edb4cd206caa81beae2$"
 }
 }

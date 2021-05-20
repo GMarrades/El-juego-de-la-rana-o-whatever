@@ -60,7 +60,7 @@ function updateInit(){
 
 //MAIN STATE
 function loadAssets(){
-    game.load.image("frog", "assets/imgs/froggo")
+    game.load.image("frog", "assets/imgs/froggo")//SPRITES 1-3 SALTO DCHA, 4-6 SALTO IZQ, 7-9 CAMINAR IZQ, 9-12 CAMINAR DCHA
     //loadear el sprite de las moscas
 };
 function initializeGame();
