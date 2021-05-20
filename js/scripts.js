@@ -61,10 +61,9 @@ function updateInit(){
 //MAIN STATE
 function loadAssets(){
     game.load.image("frog", "assets/imgs/froggo")
+    //loadear el sprite de las moscas
 };
 function initializeGame();
-Insects = game.add.group();
-Insects.enableBody = true;
 let vidaActual = VIDA_MAXIMA;
 function gameUpdate();
 
