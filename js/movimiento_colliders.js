@@ -7,9 +7,9 @@ const FUERZA_GRAVEDAD = 250;
 const FUERZA_SALTO = -250;
 let vidaActual;
 
-let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
+let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'phaser-example', { preload: preloadGame, create: createGame, update: updateGame });
 
-function preload() {
+function preloadGame() {
     game.load.image('background', 'assets/imgs/deep-space.jpg');
     game.load.image('suelito', 'assets/imgs/suelo_arriba.png')
     game.load.spritesheet('frog', 'assets/imgs/FROGGO_caminando2.png', TAMAÑO_TILE, TAMAÑO_TILE, 6);
@@ -19,7 +19,7 @@ let player;
 let bg;
 let facing = 'mLeft';
 
-function create() {
+function createGame() {
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -56,7 +56,7 @@ function create() {
     vidaActual = VIDA_MAXIMA;
 }
 
-function update() {
+function updateGame() {
 
     // game.physics.arcade.collide(player, layer);
 
@@ -80,7 +80,7 @@ function update() {
     }
 
     if (game.physics.arcade.collide(player, floor)){
-        player.y = floor.y - player.height;
+        player.y = floor.y - player.height-0.5;
     }
 
     function die(){
