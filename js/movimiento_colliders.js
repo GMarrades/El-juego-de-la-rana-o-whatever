@@ -8,6 +8,8 @@ const FUERZA_SALTO = -250;
 let vidaActual;
 
 let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'phaser-example', { preload: preloadGame, create: createGame, update: updateGame });
+let deathState = {preload:preloadDeath, create:createDeath, update:updateDeath};
+game.state.add('death', deathState);
 
 function preloadGame() {
     game.load.image('background', 'assets/imgs/deep-space.jpg');
@@ -92,6 +94,16 @@ function updateGame() {
         if(vidaActual <= 0){
             die();
         }
+    }
+
+    function preloadDeath(){
+
+    }
+    function createDeath(){
+
+    }
+    function updateDeath(){
+
     }
 
 }
