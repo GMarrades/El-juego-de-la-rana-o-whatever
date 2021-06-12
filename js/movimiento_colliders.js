@@ -1,5 +1,5 @@
 //CONSTANTES y VARIABLES INICIALIZADAS
-const TAMAÑO_TILE = 32;
+const TAMAÑO_TILE = 16;
 const FPS_BUSCADOS = 30;
 const VIDA_MAXIMA = 3;
 const FUERZA_REBOTE = 0.2;
@@ -8,18 +8,19 @@ const FUERZA_SALTO = -250;
 let vidaActual;
 
 let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'phaser-example', { preload: preloadGame, create: createGame, update: updateGame });
+let player;
+let bg;
+let facing = 'mLeft';
 let deathState = {preload:preloadDeath, create:createDeath, update:updateDeath};
 game.state.add('death', deathState);
 
+
 function preloadGame() {
-    game.load.image('background', 'assets/imgs/deep-space.jpg');
     game.load.image('suelito', 'assets/imgs/suelo_arriba.png')
     game.load.spritesheet('frog', 'assets/imgs/FROGGO_caminando2.png', TAMAÑO_TILE, TAMAÑO_TILE, 6);
 }
 
-let player;
-let bg;
-let facing = 'mLeft';
+
 
 function createGame() {
 
@@ -27,7 +28,7 @@ function createGame() {
 
     game.time.desiredFps = FPS_BUSCADOS;
 
-    game.add.image(0, 0, 'background');
+    //game.add.image(0, 0, 'background');
     floor = game.add.tileSprite(0, 600, 10000, TAMAÑO_TILE, 'suelito');
 
     //suelo
@@ -35,7 +36,7 @@ function createGame() {
     //gravedad
     game.physics.arcade.gravity.y = FUERZA_GRAVEDAD;
     //añadir a personaje y sus fisicas
-    player = game.add.sprite(TAMAÑO_TILE, TAMAÑO_TILE, 'frog');
+    player = game.add.sprite(16, 16, 'frog');
     game.physics.arcade.enable([player, floor]);
 
     //collider suelo
