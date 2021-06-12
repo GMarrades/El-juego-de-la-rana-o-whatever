@@ -11,6 +11,7 @@ let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'phaser-example', { preload
 let player;
 let bg;
 let facing = 'mLeft';
+let fuego;
 let deathState = {preload:preloadDeath, create:createDeath, update:updateDeath};
 game.state.add('death', deathState);
 
@@ -18,6 +19,7 @@ game.state.add('death', deathState);
 function preloadGame() {
     game.load.image('suelito', 'assets/imgs/suelo_arriba.png')
     game.load.spritesheet('frog', 'assets/imgs/FROGGO_caminando2.png', TAMAÑO_TILE, TAMAÑO_TILE, 6);
+    game.load.spritesheet('fireball', 'assets/imgs/FireBall.png')
     game.load.image('segunda_capa', 'assets/imgs/fondo3.png')
     game.load.image('tercera_capa', 'assets/imgs/fondo2.png')
     game.load.image('cuarta_capa', 'assets/imgs/fondo1.png')
@@ -44,6 +46,15 @@ function createGame() {
     //añadir a personaje y sus fisicas
     player = game.add.sprite(16, 1000, 'frog');
     game.physics.arcade.enable([player, floor]);
+
+    //añadir lengua como 'balas'
+    fuego = game.add.group();
+    fuego.enableBody = true;
+    fuego.physicsBodyType = Phaser.Physics.ARCADE;
+
+    fuego.createMultiple(3, 'fireball');
+    fuego.setAll('checkWorldBounds', true);
+    fuego.setAll('outOfBoundsKill', true);
 
     //collider suelo
     floor.body.collideWorldBounds = true;
@@ -87,6 +98,10 @@ function updateGame() {
         fondo2.tilePosition.x -= 0.1;
         fondo3.tilePosition.x -= 0.5;
     }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
+    {
+        dispararFuego();
+    }
     
     if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && game.physics.arcade.collide(player, floor))
     {
@@ -95,6 +110,18 @@ function updateGame() {
 
     if (game.physics.arcade.collide(player, floor)){
         player.y = floor.y - player.height-0.5;
+    }
+
+    function dispararFuego()
+    {
+        if (fuego.countDead() > 0)
+        {
+            var fireball = fuego.getFirstDead();
+
+            fireball.reset(player.x, player.y);
+
+            game.physics.arcade.moveToPointer(fireball, 300);
+        }
     }
 
     function die(){
