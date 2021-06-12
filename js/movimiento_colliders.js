@@ -1,32 +1,39 @@
-var game = new Phaser.Game(1024, 1024, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
+//CONSTANTES y VARIABLES INICIALIZADAS
+const TAMAÑO_TILE = 32;
+const FPS_BUSCADOS = 30;
+const VIDA_MAXIMA = 3;
+const FUERZA_REBOTE = 0.2;
+const FUERZA_GRAVEDAD = 250;
+const FUERZA_SALTO = -250;
+let vidaActual;
+
+let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
 
 function preload() {
-
-    
     game.load.image('background', 'assets/imgs/deep-space.jpg');
     game.load.image('suelito', 'assets/imgs/suelo_arriba.png')
-    game.load.spritesheet('dude', 'assets/imgs/FROGGO_caminando2.png', 32, 32, 6);
+    game.load.spritesheet('frog', 'assets/imgs/FROGGO_caminando2.png', TAMAÑO_TILE, TAMAÑO_TILE, 6);
 }
 
-var player;
-var bg;
-var facing = 'mLeft';
+let player;
+let bg;
+let facing = 'mLeft';
 
 function create() {
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    game.time.desiredFps = 30;
+    game.time.desiredFps = FPS_BUSCADOS;
 
     game.add.image(0, 0, 'background');
-    floor = game.add.tileSprite(0, 992, 10000, 32, 'suelito');
+    floor = game.add.tileSprite(0, 600, 10000, TAMAÑO_TILE, 'suelito');
 
     //suelo
     game.world.setBounds(0, -100, 10000, 1124)
     //gravedad
-    game.physics.arcade.gravity.y = 250;
+    game.physics.arcade.gravity.y = FUERZA_GRAVEDAD;
     //añadir a personaje y sus fisicas
-    player = game.add.sprite(32, 32, 'dude');
+    player = game.add.sprite(TAMAÑO_TILE, TAMAÑO_TILE, 'frog');
     game.physics.arcade.enable([player, floor]);
 
     //collider suelo
@@ -35,7 +42,7 @@ function create() {
     floor.body.allowGravity = false;
     
     //rebote contra el suelo y collider personaje-world
-    player.body.bounce.y = 0.2;
+    player.body.bounce.y = FUERZA_REBOTE;
     player.body.collideWorldBounds = true;
     player.body.fixedRotation = true;
 
@@ -44,6 +51,9 @@ function create() {
     player.animations.add('mRight', [0, 1, 2], 5, true);
     
     game.camera.follow(player);
+    
+    //settear la vida
+    vidaActual = VIDA_MAXIMA;
 }
 
 function update() {
@@ -66,11 +76,22 @@ function update() {
     
     if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && game.physics.arcade.collide(player, floor))
     {
-        player.body.velocity.y = -250;
+        player.body.velocity.y = FUERZA_SALTO;
     }
 
     if (game.physics.arcade.collide(player, floor)){
         player.y = floor.y - player.height;
+    }
+
+    function die(){
+
+    }
+    
+    function damage(){
+        vidaActual --;
+        if(vidaActual <= 0){
+            die();
+        }
     }
 
 }
