@@ -109,8 +109,9 @@ function hitCanasta (puntos){
     if (game.physics.arcade.collide(canasta2, fuego)){
         score +=1;
         scoreText.text = 'Score ' + score;
-        canasta.body.enable = false;
-        canasta.body.immovable = true;
+        canasta2.body.enable = false;
+        canasta2.body.immovable = true;
+        click_clack = 2;
     }
 }
 
