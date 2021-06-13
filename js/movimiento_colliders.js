@@ -12,6 +12,8 @@ let player;
 let bg;
 let facing = 'mLeft';
 let fuego;
+let canasta;
+let puntos = 0;
 let deathState = {preload:preloadDeath, create:createDeath, update:updateDeath};
 game.state.add('death', deathState);
 
@@ -23,6 +25,7 @@ function preloadGame() {
     game.load.image('segunda_capa', 'assets/imgs/fondo3.png')
     game.load.image('tercera_capa', 'assets/imgs/fondo2.png')
     game.load.image('cuarta_capa', 'assets/imgs/fondo1.png')
+    game.load.image('canastita', 'assets/imgs/Canasta.png')
 }
 
 
@@ -52,9 +55,18 @@ function createGame() {
     fuego.enableBody = true;
     fuego.physicsBodyType = Phaser.Physics.ARCADE;
 
-    fuego.createMultiple(3, 'fireball');
+    fuego.createMultiple(1, 'fireball');
     fuego.setAll('checkWorldBounds', true);
     fuego.setAll('outOfBoundsKill', true);
+
+    //añadir canasta/s
+    canasta = game.add.sprite(800, 900, 'canastita');
+
+    game.physics.arcade.enable(canasta);
+    
+    canasta.body.collideWorldBounds = true;
+    canasta.y = floor.y - 48;
+    
 
     //collider suelo
     floor.body.collideWorldBounds = true;
@@ -70,17 +82,27 @@ function createGame() {
     player.animations.add('mLeft', [3, 4, 5], 5, true);
     player.animations.add('mRight', [0, 1, 2], 5, true);
     
+    //seguir jugador
     game.camera.follow(player);
     
     //settear la vida
     vidaActual = VIDA_MAXIMA;
 }
 
-function updateGame() {
-
-    // game.physics.arcade.collide(player, layer);
+function hitCanasta (puntos){
+    if (game.physics.arcade.collide(canasta, fuego)){
+        puntos +=1;
+        console.log(puntos);
+    }
     
+}
 
+function updateGame() {
+    canasta.x = 800;
+    
+    game.physics.arcade.collide(floor, canasta);
+    game.physics.arcade.overlap(canasta, fuego, hitCanasta, null, this);
+    
     player.body.velocity.x = 0;
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
@@ -123,6 +145,7 @@ function updateGame() {
             game.physics.arcade.moveToPointer(fireball, 300);
         }
     }
+
 
     function die(){
 
