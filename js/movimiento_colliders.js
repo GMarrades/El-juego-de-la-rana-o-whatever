@@ -13,7 +13,7 @@ let bg;
 let facing = 'mLeft';
 let fuego;
 let canasta;
-let puntos = 0;
+let scoreText;
 let deathState = {preload:preloadDeath, create:createDeath, update:updateDeath};
 game.state.add('death', deathState);
 
@@ -67,6 +67,10 @@ function createGame() {
     canasta.body.collideWorldBounds = true;
     canasta.y = floor.y - 48;
     
+    //añadir HUD
+    score = 0;
+    crearHUD();
+    crearTexto();
 
     //collider suelo
     floor.body.collideWorldBounds = true;
@@ -91,8 +95,8 @@ function createGame() {
 
 function hitCanasta (puntos){
     if (game.physics.arcade.collide(canasta, fuego)){
-        puntos +=1;
-        console.log(puntos);
+        score +=1;
+        scoreText.text = 'Score ' + score;
     }
     
 }
@@ -168,4 +172,33 @@ function updateGame() {
 
     }
 
+}
+
+function crearHUD(){
+    let posX = 750;
+    let posY = 900;
+    let styleHUD = {fontsize: '5px', fill: '#FFFFFF'};
+
+    scoreText = game.add.text(posX, posY, 'Score: '+score, styleHUD);
+}
+
+function crearTexto(){
+    let posX = 50;
+    let posY = 800;
+
+    WelcomeText = game.add.text(posX, posY, 'Welcome to a Froggo Game!', {
+        font: 'Arial',
+        fontSize: '30px',
+        fill: '#FFFFFF'
+    });
+    HelpText = game.add.text(posX, posY+50, 'Press LEFT & RIGHT to move, SPACEBAR to jump, aim with the CURSOR & shoot with UP!', {
+        font: 'Arial',
+        fontSize: '15px',
+        fill: '#FFFFFF'
+    });
+    MinigameText = game.add.text(posX+1000, posY+50, 'Try hitting the baskets with your fireballs!', {
+        font: 'Arial',
+        fontSize: '15px',
+        fill: '#FFFFFF'
+    });
 }
