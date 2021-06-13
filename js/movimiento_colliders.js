@@ -41,14 +41,15 @@ function createGame() {
     fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'segunda_capa');
 
     floor = game.add.tileSprite(0, 1100, 10000, TAMAÑO_TILE, 'suelito');
+    floor2 = game.add.tileSprite(1350, 800, 100, TAMAÑO_TILE, 'suelito');
 
     //suelo
     game.world.setBounds(0, -100, 10000, 1124)
     //gravedad
     game.physics.arcade.gravity.y = FUERZA_GRAVEDAD;
     //añadir a personaje y sus fisicas
-    player = game.add.sprite(16, 1000, 'frog');
-    game.physics.arcade.enable([player, floor]);
+    player = game.add.sprite(1200, 1000, 'frog');
+    game.physics.arcade.enable([player, floor, floor2]);
 
     //añadir lengua como 'balas'
     fuego = game.add.group();
@@ -61,11 +62,15 @@ function createGame() {
 
     //añadir canasta/s
     canasta = game.add.sprite(800, 900, 'canastita');
+    canasta2 = game.add.sprite(1352, 800-48, 'canastita');
 
-    game.physics.arcade.enable(canasta);
+    game.physics.arcade.enable([canasta, canasta2]);
     
     canasta.body.collideWorldBounds = true;
-    canasta.y = floor.y - 48;
+    canasta2.body.collideWorldBounds = true;
+    canasta2.body.allowGravity = false;
+
+    click_clack = 0;
     
     //añadir HUD
     score = 0;
@@ -76,6 +81,7 @@ function createGame() {
     floor.body.collideWorldBounds = true;
     floor.body.immovable = true;
     floor.body.allowGravity = false;
+    floor2.body.allowGravity = false;
     
     //rebote contra el suelo y collider personaje-world
     player.body.bounce.y = FUERZA_REBOTE;
@@ -92,20 +98,41 @@ function createGame() {
     //settear la vida
     vidaActual = VIDA_MAXIMA;
 }
-
+//esto está hecho de tal forma que cuando la bola toque la primera canasta, ya no puedas volver a ganar puntos de ella
+//igual con la siguiente
 function hitCanasta (puntos){
     if (game.physics.arcade.collide(canasta, fuego)){
         score +=1;
         scoreText.text = 'Score ' + score;
+        canasta.body.enable = false;
     }
-    
+    if (game.physics.arcade.collide(canasta2, fuego)){
+        score +=1;
+        scoreText.text = 'Score ' + score;
+        canasta.body.enable = false;
+        canasta.body.immovable = true;
+    }
 }
 
 function updateGame() {
-    canasta.x = 800;
+    //movimiento canasta2
+    if(click_clack == 0){
+        canasta2.x -= 1;  
+    }
+    if(click_clack == 1){
+        canasta2.x += 1;
+    }
+    if(canasta2.x <= 1350){
+        click_clack = 1;
+    }
+    if(canasta2.x >= 1435){
+        click_clack = 0;
+    }
+    canasta2.y = 800-48;
     
     game.physics.arcade.collide(floor, canasta);
     game.physics.arcade.overlap(canasta, fuego, hitCanasta, null, this);
+    game.physics.arcade.overlap(canasta2, fuego, hitCanasta, null, this);
     
     player.body.velocity.x = 0;
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
