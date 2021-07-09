@@ -1,9 +1,9 @@
-var PIECE_WIDTH = 200,
+let PIECE_WIDTH = 200,
     PIECE_HEIGHT = 200,
     BOARD_COLS,
     BOARD_ROWS;
 
-var piecesGroup,
+let piecesGroup,
     piecesAmount,
     shuffledIndexArray = [];
 
@@ -17,7 +17,7 @@ function create() {
 
 function prepareBoard() {
 
-    var piecesIndex = 0,
+    let piecesIndex = 0,
         i, j,
         piece;
 
