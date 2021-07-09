@@ -17,11 +17,11 @@ let canasta;
 let scoreText;
 let click_clack = true;
 let score = 0;
-let CurrentMinigame = 1;
-let win = false;
-let totalScore = 0;
+let CurrentMinigame = 1; //Controlar que eventos se deben de triggerear en cada minijuego
+let win = false; //Determina que texto se pone en la pantalla de acabar el juego
+let totalScore = 0; //Intentar llevar una cuenta  de la puntuación en los diferentes minijuegos
 
-let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'menuState', { preload: preloadGame, create: createGame, update: updateGame });//CAMBIAR ESTOS A MENU
+let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'menuState', { preload: preloadGame, create: createGame, update: updateGame });//CAMBIAR ESTOS A LOS DE preloadMenu y tal cuando haya botones para ir del menu a los sitios
 let player;
 let bg;
 let facing = 'mLeft';
@@ -32,29 +32,30 @@ let aboutState = {preload:preloadAbout, create:createAbout, update:updateAbout};
 game.state.add('end', endState);
 game.state.add('about', aboutState);
 
-function preloadMenu(){
+function preloadMenu(){//Literalmente precarga al menu con los fondos, todas las pantallas que no son de juego tienen esto puesto
     game.load.image('primerPlano', 'assets/imgs/fondo3.png');
     game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
     game.load.image('tercerPlano', 'assets/imgs/fondo1.png');
 }
 
-function createMenu(){
+function createMenu(){//Carga al menu principal con fondos y texto segun el documento bla bla bla, faltan los botones
     fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
     fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'segundoPlano');
     fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'tercerPlano');
+    TextoInit();
 }
 
-function updateMenu(){
+function updateMenu(){//Falta que cuando estén los botones pulsarlos te lleve a donde te tiene que llevar usando startGame() para empezar el juego y goInstructions() para ir a lo de las instrucciones
 
 }
 
-function preloadAbout(){
+function preloadAbout(){ //About está hecho del todo
     game.load.image('primerPlano', 'assets/imgs/fondo3.png');
     game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
     game.load.image('TercerPlano', 'assets/imgs/fondo1.png');
 }
 
-function createAbout(){
+function createAbout(){ //Los textos del about
     fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
     fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'segundoPlano');
     fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'tercerPlano');
@@ -63,7 +64,7 @@ function createAbout(){
     TextosGoBack();
 }
 
-function updateAbout(){
+function updateAbout(){ //Toda la pantalla funciona como un botón por lo que no hace falta ponerlo
     if (game.input.mousePointer.leftButton.justPressed(30)){
         mainMenu();
     }
@@ -160,13 +161,13 @@ function updateGame() {
    
 }
 
-function preloadEnd(){
+function preloadEnd(){ //Cargados los fondos de las pantallas no jugables
     game.load.image('primerPlano', 'assets/imgs/fondo3.png');
     game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
     game.load.image('TercerPlano', 'assets/imgs/fondo1.png');
 }
 
-function createEnd(){
+function createEnd(){ //Usa If/else para determinar que texto poner, faltan los botones como en el Main menu
     fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
     fondo2 = game.add.tileSprite(0, 500, 1024, 900, 'segundoPlano');
     fondo3 = game.add.tileSprite(0, 650, 1024, 900, 'tercerPlano');
@@ -295,6 +296,9 @@ function startGame(){ // EMPEZAR EL JUEGO
     game.state.start(gameState);
 }
 
+function goInstructions(){
+    game.state.start(aboutState);
+}
 function TextosGoBack(){
     GoBackText = game.add.text(TEXTO_MENU_X, TEXTO_MENU_Y, 'Click anywhere to go to Main Menu', {font: 'Arial',fontSize: '15px', fill: '#FFFFFF'});
 }
