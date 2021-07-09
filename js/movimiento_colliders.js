@@ -5,6 +5,11 @@ const VIDA_MAXIMA = 3;
 const FUERZA_REBOTE = 0.2;
 const FUERZA_GRAVEDAD = 250;
 const FUERZA_SALTO = -250;
+const MAX_CANASTAS = 2;
+const TEXTO_MENU_X = 50;
+const TEXTO_MENU_Y = 900;
+const TEXTOS_X = 50;
+const TEXTOS_Y = 800;
 
 let vidaActual;
 let fuego;
@@ -13,14 +18,56 @@ let scoreText;
 let click_clack = true;
 let score = 0;
 let CurrentMinigame = 1;
+let win = false;
+let totalScore = 0;
 
-let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'phaser-example', { preload: preloadGame, create: createGame, update: updateGame });
+let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'menuState', { preload: preloadGame, create: createGame, update: updateGame });//CAMBIAR ESTOS A MENU
 let player;
 let bg;
 let facing = 'mLeft';
-let deathState = {preload:preloadDeath, create:createDeath, update:updateDeath};
-game.state.add('death', deathState);
+let gameState = {preload:preloadGame, create:createGame, update:updateGame};
+let endState = {preload:preloadEnd, create:createEnd, update:updateEnd};
+let aboutState = {preload:preloadAbout, create:createAbout, update:updateAbout};
 
+game.state.add('end', endState);
+game.state.add('about', aboutState);
+
+function preloadMenu(){
+    game.load.image('primerPlano', 'assets/imgs/fondo3.png');
+    game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
+    game.load.image('tercerPlano', 'assets/imgs/fondo1.png');
+}
+
+function createMenu(){
+    fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
+    fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'segundoPlano');
+    fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'tercerPlano');
+}
+
+function updateMenu(){
+
+}
+
+function preloadAbout(){
+    game.load.image('primerPlano', 'assets/imgs/fondo3.png');
+    game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
+    game.load.image('TercerPlano', 'assets/imgs/fondo1.png');
+}
+
+function createAbout(){
+    fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
+    fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'segundoPlano');
+    fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'tercerPlano');
+
+    TextoAbout();
+    TextosGoBack();
+}
+
+function updateAbout(){
+    if (game.input.mousePointer.leftButton.justPressed(30)){
+        mainMenu();
+    }
+}
 
 function preloadGame() {
     game.load.image('suelito', 'assets/imgs/suelo_arriba.png')
@@ -30,9 +77,12 @@ function preloadGame() {
     game.load.image('cuarta_capa', 'assets/imgs/fondo1.png')
     game.load.image('canastita', 'assets/imgs/Canasta.png');
     game.load.spritesheet('fireball', 'assets/imgs/FireBall.png');
+    game.load.image('agua', 'assets/imgs/Water.png');
+    game.load.image('tronco','assets/imgs/tronco.png');
+    game.load.image('corazon1', 'assets/imgs/corazon1.png');
+    game.load.image('corazon2', 'assets/imgs/corazon2.png');
+    game.load.image('corazon3', 'assets/imgs/corazon3.png');
 }
-
-
 
 function createGame() {
     //Inicializar Físicas y tal
@@ -60,7 +110,7 @@ function createGame() {
     game.physics.arcade.enable([player, floor, floor2, canasta, canasta2]);
     
     //añadir HUD
-    crearTexto();
+    TextosGame();
 
     //collider suelo
     floor.body.collideWorldBounds = true;
@@ -109,35 +159,30 @@ function updateGame() {
     hitCanasta();
    
 }
-function preloadDeath(){
-        
-}
-function createDeath(){
 
-}
-function updateDeath(){
-
+function preloadEnd(){
+    game.load.image('primerPlano', 'assets/imgs/fondo3.png');
+    game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
+    game.load.image('TercerPlano', 'assets/imgs/fondo1.png');
 }
 
-function crearTexto(){
-    let posX = 50;
-    let posY = 800;
+function createEnd(){
+    fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
+    fondo2 = game.add.tileSprite(0, 500, 1024, 900, 'segundoPlano');
+    fondo3 = game.add.tileSprite(0, 650, 1024, 900, 'tercerPlano');
 
-    WelcomeText = game.add.text(posX, posY, 'Welcome to a Froggo Game!', {
-        font: 'Arial',
-        fontSize: '30px',
-        fill: '#FFFFFF'
-    });
-    HelpText = game.add.text(posX, posY+50, 'Press LEFT & RIGHT to move, SPACEBAR to jump, aim with the CURSOR & shoot with UP!', {
-        font: 'Arial',
-        fontSize: '15px',
-        fill: '#FFFFFF'
-    });
-    MinigameText = game.add.text(posX+1000, posY+50, 'Try hitting the baskets with your fireballs!', {
-        font: 'Arial',
-        fontSize: '15px',
-        fill: '#FFFFFF'
-    });
+    if(win){
+        WinText = game.add.text(TEXTOS_X, TEXTOS_Y, 'You Won!', {font: 'Arial',fontSize: '30px',fill: '#FFFFFF'});
+    }
+    else{
+        LoseText =  game.add.text(TEXTOS_X, TEXTOS_Y, 'You Lost!', {font: 'Arial',fontSize: '30px',fill: '#FFFFFF'});
+    }
+    scoreText = game.add.text(TEXTOS_X, TEXTOS_Y+50, 'You reached minigme ' + CurrentMinigame + 'Your score is ' + totalScore);
+
+}
+
+function updateEnd(){
+
 }
 
 function moverCanastas(){
@@ -209,7 +254,7 @@ function PlayerController(){ //Pilla todos los inputs de teclado y modifica al j
         fondo3.tilePosition.x -= 0.5;
     }
     
-    if ((game.input.keyboard.isDown(Phaser.Keyboard.UP || game.input.keyboard.isDown(Phaser.Keyboard.W))) && game.physics.arcade.collide(player, floor))
+    if (game.input.keyboard.isDown(Phaser.Keyboard.UP) && game.physics.arcade.collide(player, floor))
     {
         player.body.velocity.y = FUERZA_SALTO;
     }
@@ -222,8 +267,9 @@ function PlayerController(){ //Pilla todos los inputs de teclado y modifica al j
     }
 }
 
-function die(){
-
+function die(){ //ACABAR EL JUEGO MAL
+    //PONER UN TIMER DE 1segundo
+    game.state.start(endState);
 }
 
 function damage(){
@@ -231,4 +277,45 @@ function damage(){
     if(vidaActual <= 0){
         die();
     }
+}
+
+function winCanasta(){ //ACABAR EL JUEGO BIEN
+    if (score >= MAXCANASTAS){
+        win = true;
+        //PONER UN TIMER DE 1 SEGUNDO
+        game.state.start(endState);
+    }
+}
+
+function mainMenu(){ //IR AL MAIN MENU
+    game.state.start(menuState);
+}
+
+function startGame(){ // EMPEZAR EL JUEGO
+    game.state.start(gameState);
+}
+
+function TextosGoBack(){
+    GoBackText = game.add.text(TEXTO_MENU_X, TEXTO_MENU_Y, 'Click anywhere to go to Main Menu', {font: 'Arial',fontSize: '15px', fill: '#FFFFFF'});
+}
+
+function TextosGame(){
+
+    MinigameText = game.add.text(1050, 900, 'Try hitting the baskets with your fireballs!', {
+        font: 'Arial',
+        fontSize: '15px',
+        fill: '#FFFFFF'
+    });
+}
+
+function TextoAbout(){
+
+
+    
+    HelpText = game.add.text(TEXTOS_X, TEXTOS_Y+50, 'Press LEFT & RIGHT to move, UP to jump, aim with the CURSOR & shoot with CLICK!', {font: 'Arial',fontSize: '15px',fill: '#FFFFFF'});
+}
+
+function TextoInit(){
+    WelcomeText = game.add.text(TEXTOS_X, TEXTOS_Y, 'Welcome to a Froggo Game!', {font: 'Arial',fontSize: '30px',fill: '#FFFFFF'});
+    AuthorsText = game.add.text(TEXTOS_X, TEXTOS_Y, 'A game by Guillem Marrades, Jaime P and Margarita Gaya', {font: 'Arial', fontSize: '30px', fill: '#FFFFFF'});
 }
