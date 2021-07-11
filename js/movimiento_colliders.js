@@ -1,4 +1,6 @@
 //CONSTANTES y VARIABLES INICIALIZADAS
+const ANCHO = 1024;
+const ALTO = 633;
 const TAMAÑO_TILE = 16;
 const FPS_BUSCADOS = 30;
 const VIDA_MAXIMA = 3;
@@ -6,10 +8,9 @@ const FUERZA_REBOTE = 0.2;
 const FUERZA_GRAVEDAD = 250;
 const FUERZA_SALTO = -250;
 const MAX_CANASTAS = 2;
-const TEXTO_MENU_X = 50;
-const TEXTO_MENU_Y = 900;
-const TEXTOS_X = 50;
-const TEXTOS_Y = 800;
+const PATH_TO_MINIGAME4 = 2800;
+const COLOR_TEXTO_ABAJO = '#aeabe';
+const COLOR_TEXTO_ARRIBA = '##e69138';
 
 let vidaActual;
 let fuego;
@@ -21,33 +22,37 @@ let CurrentMinigame = 1; //Controlar que eventos se deben de triggerear en cada 
 let win = false; //Determina que texto se pone en la pantalla de acabar el juego
 let totalScore = 0; //Intentar llevar una cuenta  de la puntuación en los diferentes minijuegos
 
-let game = new Phaser.Game(1024, 633, Phaser.CANVAS, 'menuState', { preload: preloadGame, create: createGame, update: updateGame });//CAMBIAR ESTOS A LOS DE preloadMenu y tal cuando haya botones para ir del menu a los sitios
+let game = new Phaser.Game(ANCHO, ALTO, Phaser.CANVAS, 'menu',);
 let player;
 let bg;
 let facing = 'mLeft';
 let gameState = {preload:preloadGame, create:createGame, update:updateGame};
-let endState = {preload:preloadEnd, create:createEnd, update:updateEnd};
+let endState = {preload:preloadEnd, create:createEnd};
 let aboutState = {preload:preloadAbout, create:createAbout, update:updateAbout};
+let menuState = {preload:preloadMenu, create:createMenu};
 
-game.state.add('end', endState);
-game.state.add('about', aboutState);
 
-function preloadMenu(){//Literalmente precarga al menu con los fondos, todas las pantallas que no son de juego tienen esto puesto
+
+window.onload = initGame;
+
+
+function preloadMenu(){
     game.load.image('primerPlano', 'assets/imgs/fondo3.png');
     game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
     game.load.image('tercerPlano', 'assets/imgs/fondo1.png');
+    game.load.image('botonAbout', 'assets/imgs/button_about.png');
+    game.load.image('botonPlay', 'assets/imgs/button_play.png');
 }
 
-function createMenu(){//Carga al menu principal con fondos y texto segun el documento bla bla bla, faltan los botones
-    fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
-    fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'segundoPlano');
-    fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'tercerPlano');
+function createMenu(){
+    fondo3 = game.add.tileSprite(0, 0, ANCHO, 900, 'tercerPlano');
+    fondo2 = game.add.tileSprite(0, 0, ANCHO, 900, 'segundoPlano');
+    fondo = game.add.tileSprite(0, 0, ANCHO, 900, 'primerPlano');
+    game.add.button(450, 300, 'botonAbout', goAbout);
+    game.add.button(463, 400, 'botonPlay', startGame);
     TextoInit();
 }
 
-function updateMenu(){//Falta que cuando estén los botones pulsarlos te lleve a donde te tiene que llevar usando startGame() para empezar el juego y goInstructions() para ir a lo de las instrucciones
-
-}
 
 function preloadAbout(){ //About está hecho del todo
     game.load.image('primerPlano', 'assets/imgs/fondo3.png');
@@ -56,10 +61,9 @@ function preloadAbout(){ //About está hecho del todo
 }
 
 function createAbout(){ //Los textos del about
-    fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
-    fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'segundoPlano');
-    fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'tercerPlano');
-
+    fondo3 = game.add.tileSprite(0, 0, 1024, 900, 'tercerPlano');
+    fondo2 = game.add.tileSprite(0, 0, 1024, 900, 'segundoPlano');
+    fondo = game.add.tileSprite(0, 0, 1024, 900, 'primerPlano');
     TextoAbout();
     TextosGoBack();
 }
@@ -94,11 +98,12 @@ function createGame() {
     fondo = game.add.tileSprite(0, 300, 10000, 900, 'cuarta_capa');
     fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'tercera_capa');
     fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'segunda_capa');
-    floor = game.add.tileSprite(0, 1100, 10000, TAMAÑO_TILE, 'suelito');
+    floor = game.add.tileSprite(0, 1100, 1350, TAMAÑO_TILE, 'suelito');
     floor2 = game.add.tileSprite(1350, 800, 100, TAMAÑO_TILE, 'suelito');
-    player = game.add.sprite(1200, 300, 'frog');
+    agua = game.add.tileSprite(1350,1100, 1350, TAMAÑO_TILE, 'agua');
+    player = game.add.sprite(1200, 1000, 'frog');
     canasta = game.add.sprite(800, 900, 'canastita');
-    canasta2 = game.add.sprite(1352, 800-48, 'canastita');
+    canasta2 = game.add.sprite(1352, 852, 'canastita');
 
 
     //suelo
@@ -108,7 +113,7 @@ function createGame() {
     game.physics.arcade.gravity.y = FUERZA_GRAVEDAD;
 
     //añadir fisicas
-    game.physics.arcade.enable([player, floor, floor2, canasta, canasta2]);
+    game.physics.arcade.enable([player, floor, floor2, canasta, canasta2, agua]);
     
     //añadir HUD
     TextosGame();
@@ -118,6 +123,9 @@ function createGame() {
     floor.body.immovable = true;
     floor.body.allowGravity = false;
     floor2.body.allowGravity = false;
+    agua.body.collideWorldBounds = true;
+    agua.body.immovable = true;
+    agua.body.allowGravity = false;
     
     //rebote contra el suelo y collider personaje-world
     player.body.bounce.y = FUERZA_REBOTE;
@@ -147,9 +155,9 @@ function createGame() {
     canasta.body.collideWorldBounds = true;
     canasta2.body.collideWorldBounds = true;
     canasta2.body.allowGravity = false;
-    game.physics.arcade.collide(floor, canasta);
     game.physics.arcade.overlap(canasta, fuego, hitCanasta, null, this);
     game.physics.arcade.overlap(canasta2, fuego, hitCanasta, null, this);
+    game.physics.arcade.overlap(player, agua, die, null, this);
 
     crearHUD();
 }
@@ -158,32 +166,28 @@ function updateGame() {
     PlayerController();
     moverCanastas();
     hitCanasta();
-   
 }
 
 function preloadEnd(){ //Cargados los fondos de las pantallas no jugables
     game.load.image('primerPlano', 'assets/imgs/fondo3.png');
     game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
     game.load.image('TercerPlano', 'assets/imgs/fondo1.png');
+    game.load.image('botonRestart', 'assets/imgs/button_restart.png');
+    game.load.image('botonMenu', 'assets/imgs/button_main-menu.png')
 }
 
 function createEnd(){ //Usa If/else para determinar que texto poner, faltan los botones como en el Main menu
-    fondo = game.add.tileSprite(0, 300, 1024, 900, 'primerPlano');
-    fondo2 = game.add.tileSprite(0, 500, 1024, 900, 'segundoPlano');
-    fondo3 = game.add.tileSprite(0, 650, 1024, 900, 'tercerPlano');
-
+    fondo3 = game.add.tileSprite(0, 0, 1024, 900, 'tercerPlano');
+    fondo2 = game.add.tileSprite(0, 0, 1024, 900, 'segundoPlano');
+    fondo = game.add.tileSprite(0, 0, 1024, 900, 'primerPlano');
     if(win){
-        WinText = game.add.text(TEXTOS_X, TEXTOS_Y, 'You Won!', {font: 'Arial',fontSize: '30px',fill: '#FFFFFF'});
+        WinText = game.add.text(50, 150, 'You Won!', {font: 'Arial',fontSize: '30px',fill: '#e69138'});
     }
     else{
-        LoseText =  game.add.text(TEXTOS_X, TEXTOS_Y, 'You Lost!', {font: 'Arial',fontSize: '30px',fill: '#FFFFFF'});
+        LoseText =  game.add.text(500, 150, 'You Lost!', {font: 'Arial',fontSize: '30px',fill: '#e69138'});
     }
-    scoreText = game.add.text(TEXTOS_X, TEXTOS_Y+50, 'You reached minigme ' + CurrentMinigame + 'Your score is ' + totalScore);
-
-}
-
-function updateEnd(){
-
+    miniText = game.add.text(50, 400, 'You reached minigame ' + CurrentMinigame, {font: 'Arial',fontSize: '30px',fill: '#f2db9b'});
+    scoreText = game.add.text(750, 400,  'Your score is ' + totalScore,{font: 'Arial',fontSize: '30px',fill: '#f2db9b'} )
 }
 
 function moverCanastas(){
@@ -270,7 +274,7 @@ function PlayerController(){ //Pilla todos los inputs de teclado y modifica al j
 
 function die(){ //ACABAR EL JUEGO MAL
     //PONER UN TIMER DE 1segundo
-    game.state.start(endState);
+    game.state.start('end');
 }
 
 function damage(){
@@ -284,23 +288,23 @@ function winCanasta(){ //ACABAR EL JUEGO BIEN
     if (score >= MAXCANASTAS){
         win = true;
         //PONER UN TIMER DE 1 SEGUNDO
-        game.state.start(endState);
+        game.state.start('end');
     }
 }
 
 function mainMenu(){ //IR AL MAIN MENU
-    game.state.start(menuState);
+    game.state.start('menu');
 }
 
 function startGame(){ // EMPEZAR EL JUEGO
-    game.state.start(gameState);
+    game.state.start('game');
 }
 
 function goInstructions(){
     game.state.start(aboutState);
 }
 function TextosGoBack(){
-    GoBackText = game.add.text(TEXTO_MENU_X, TEXTO_MENU_Y, 'Click anywhere to go to Main Menu', {font: 'Arial',fontSize: '15px', fill: '#FFFFFF'});
+    GoBackText = game.add.text(25, 600, 'Click anywhere to go to Main Menu', {font: 'Arial',fontSize: '20px', fill: '#f2db9b'});
 }
 
 function TextosGame(){
@@ -313,13 +317,26 @@ function TextosGame(){
 }
 
 function TextoAbout(){
-
-
-    
-    HelpText = game.add.text(TEXTOS_X, TEXTOS_Y+50, 'Press LEFT & RIGHT to move, UP to jump, aim with the CURSOR & shoot with CLICK!', {font: 'Arial',fontSize: '15px',fill: '#FFFFFF'});
+    HelpText = game.add.text(25, 400, 'Press LEFT & RIGHT to move, UP to jump, aim with the CURSOR & shoot with CLICK!', {font: 'Arial',fontSize: '24px',fill: '#f2db9b'});
 }
 
 function TextoInit(){
-    WelcomeText = game.add.text(TEXTOS_X, TEXTOS_Y, 'Welcome to a Froggo Game!', {font: 'Arial',fontSize: '30px',fill: '#FFFFFF'});
-    AuthorsText = game.add.text(TEXTOS_X, TEXTOS_Y, 'A game by Guillem Marrades, Jaime P and Margarita Gaya', {font: 'Arial', fontSize: '30px', fill: '#FFFFFF'});
+    WelcomeText = game.add.text(320, 100, 'Welcome to a Froggo Game!', {font: 'Arial',fontSize: '30px',fill: '#e69138'});
+    AuthorsText = game.add.text(100, 550, 'A game by Guillem Marrades, Jaime P and Margarita Gaya', {font: 'Arial', fontSize: '30px', fill: '#f2db9b' });
+}
+
+function checkCurrentMinigam(){
+
+}
+
+function initGame(){
+    game.state.add('menu', menuState);
+    game.state.add('game', gameState);
+    game.state.add('end', endState);
+    game.state.add('about', aboutState);
+    game.state.start('menu');
+}
+
+function goAbout(){
+    game.state.start('about');
 }
