@@ -188,7 +188,9 @@ function createEnd(){ //Usa If/else para determinar que texto poner, faltan los 
         LoseText =  game.add.text(500, 150, 'You Lost!', {font: 'Arial',fontSize: '30px',fill: '#e69138'});
     }
     miniText = game.add.text(50, 400, 'You reached minigame ' + CurrentMinigame, {font: 'Arial',fontSize: '30px',fill: '#f2db9b'});
-    scoreText = game.add.text(750, 400,  'Your score is ' + totalScore,{font: 'Arial',fontSize: '30px',fill: '#f2db9b'} )
+    scoreText = game.add.text(750, 400,  'Your score is ' + totalScore,{font: 'Arial',fontSize: '30px',fill: '#f2db9b'});
+    game.add.button(50, 500, 'botonMenu', mainMenu);
+    game.add.button(750, 500, 'botonRestart', startGame);
 }
 
 function moverCanastas(){
@@ -247,7 +249,7 @@ function hitCanasta (){
     }
 }
 
-function PlayerController(){ //Pilla todos los inputs de teclado y modifica al jugueador
+function PlayerController(){ //Pilla todos los inputs que afectan al juegueador
     player.body.velocity.x = 0;
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
@@ -279,7 +281,7 @@ function PlayerController(){ //Pilla todos los inputs de teclado y modifica al j
     }
 }
 
-function die(){ //ACABAR EL JUEGO MAL
+function die(){
     //PONER UN TIMER DE 1segundo
     game.state.start('end');
 }
@@ -329,7 +331,7 @@ function TextoAbout(){
 
 function TextoInit(){
     WelcomeText = game.add.text(320, 100, 'Welcome to a Froggo Game!', {font: 'Arial',fontSize: '30px',fill: '#e69138'});
-    AuthorsText = game.add.text(100, 550, 'A game by Guillem Marrades, Jaime P and Margarita Gaya', {font: 'Arial', fontSize: '30px', fill: '#f2db9b' });
+    AuthorsText = game.add.text(100, 550, 'A game by Guillem Marrades, Jaime Pérez and Margarita Gaya', {font: 'Arial', fontSize: '30px', fill: '#f2db9b' });
 }
 
 function checkCurrentMinigam(){
