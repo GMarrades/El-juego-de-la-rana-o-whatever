@@ -166,6 +166,7 @@ function updateGame() {
     PlayerController();
     moverCanastas();
     hitCanasta();
+    drown();
 }
 
 function preloadEnd(){ //Cargados los fondos de las pantallas no jugables
@@ -224,6 +225,12 @@ function crearHUD(){
     let styleHUD = {fontsize: '5px', fill: '#FFFFFF'};
 
     scoreText = game.add.text(posX, posY, 'Score: '+score, styleHUD);
+}
+
+function drown(){
+    if(game.physics.arcade.collide(player, agua)){
+        die();
+    }
 }
 
 function hitCanasta (){
