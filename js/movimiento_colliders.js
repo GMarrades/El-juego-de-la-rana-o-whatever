@@ -7,10 +7,8 @@ const VIDA_MAXIMA = 3;
 const FUERZA_REBOTE = 0.2;
 const FUERZA_GRAVEDAD = 250;
 const FUERZA_SALTO = -250;
-const MAX_CANASTAS = 2;
-const PATH_TO_MINIGAME4 = 2800;
-const COLOR_TEXTO_ABAJO = '#aeabe';
-const COLOR_TEXTO_ARRIBA = '##e69138';
+const MOSCAS_GROUP_SIZE = 200;
+const TIMED_SPAWN = 0.1 * Phaser.Timer.SECOND;
 
 let vidaActual;
 let fuego;
@@ -19,13 +17,14 @@ let scoreText;
 let click_clack = true;
 let score = 0;
 let CurrentMinigame = 1; //Controlar que eventos se deben de triggerear en cada minijuego
+let endedMg2 = false;
 let win = false; //Determina que texto se pone en la pantalla de acabar el juego
-let totalScore = 0; //Intentar llevar una cuenta  de la puntuación en los diferentes minijuegos
+let moscas;
+
 
 let game = new Phaser.Game(ANCHO, ALTO, Phaser.CANVAS, 'menu',);
 let player;
 let bg;
-let facing = 'mLeft';
 let gameState = {preload:preloadGame, create:createGame, update:updateGame};
 let endState = {preload:preloadEnd, create:createEnd};
 let aboutState = {preload:preloadAbout, create:createAbout, update:updateAbout};
@@ -37,56 +36,37 @@ window.onload = initGame;
 
 
 function preloadMenu(){
-    game.load.image('primerPlano', 'assets/imgs/fondo3.png');
-    game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
-    game.load.image('tercerPlano', 'assets/imgs/fondo1.png');
+    game.load.atlasJSONHash('atlas', 'assets/imgs/Atlas.png', 'assets/imgs/Atlas.json')
     game.load.image('botonAbout', 'assets/imgs/button_about.png');
     game.load.image('botonPlay', 'assets/imgs/button_play.png');
 }
 
 function createMenu(){
-    fondo3 = game.add.tileSprite(0, 0, ANCHO, 900, 'tercerPlano');
-    fondo2 = game.add.tileSprite(0, 0, ANCHO, 900, 'segundoPlano');
-    fondo = game.add.tileSprite(0, 0, ANCHO, 900, 'primerPlano');
+    fondo = game.add.sprite(0, 0, 'atlas', 'fondoMenu.png');
     game.add.button(450, 300, 'botonAbout', goAbout);
     game.add.button(463, 400, 'botonPlay', startGame);
     TextoInit();
 }
 
+function preloadAbout(){
+    game.load.atlasJSONHash('atlas', 'assets/imgs/Atlas.png', 'assets/imgs/Atlas.json')
 
-function preloadAbout(){ //About está hecho del todo
-    game.load.image('primerPlano', 'assets/imgs/fondo3.png');
-    game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
-    game.load.image('TercerPlano', 'assets/imgs/fondo1.png');
 }
 
-function createAbout(){ //Los textos del about
-    fondo3 = game.add.tileSprite(0, 0, 1024, 900, 'tercerPlano');
-    fondo2 = game.add.tileSprite(0, 0, 1024, 900, 'segundoPlano');
-    fondo = game.add.tileSprite(0, 0, 1024, 900, 'primerPlano');
+function createAbout(){
+    fondo = game.add.sprite(0, 0, 'atlas', 'fondoMenu.png');
     TextoAbout();
     TextosGoBack();
 }
 
-function updateAbout(){ //Toda la pantalla funciona como un botón por lo que no hace falta ponerlo
+function updateAbout(){
     if (game.input.mousePointer.leftButton.justPressed(30)){
         mainMenu();
     }
 }
 
 function preloadGame() {
-    game.load.image('suelito', 'assets/imgs/suelo_arriba.png')
-    game.load.spritesheet('frog', 'assets/imgs/FROGGO_caminando2.png', TAMAÑO_TILE, TAMAÑO_TILE, 6);
-    game.load.image('segunda_capa', 'assets/imgs/fondo3.png')
-    game.load.image('tercera_capa', 'assets/imgs/fondo2.png')
-    game.load.image('cuarta_capa', 'assets/imgs/fondo1.png')
-    game.load.image('canastita', 'assets/imgs/Canasta.png');
-    game.load.spritesheet('fireball', 'assets/imgs/FireBall.png');
-    game.load.image('agua', 'assets/imgs/Water.png');
-    game.load.image('tronco','assets/imgs/tronco.png');
-    game.load.image('corazon1', 'assets/imgs/corazon1.png');
-    game.load.image('corazon2', 'assets/imgs/corazon2.png');
-    game.load.image('corazon3', 'assets/imgs/corazon3.png');
+game.load.atlasJSONHash('atlas', 'assets/imgs/Atlas.png', 'assets/imgs/Atlas.json')
 }
 
 function createGame() {
@@ -95,16 +75,16 @@ function createGame() {
     game.time.desiredFps = FPS_BUSCADOS;
 
     //Añadir Sprites
-    fondo = game.add.tileSprite(0, 300, 10000, 900, 'cuarta_capa');
-    fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'tercera_capa');
-    fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'segunda_capa');
-    floor = game.add.tileSprite(0, 1100, 1350, TAMAÑO_TILE, 'suelito');
-    floor2 = game.add.tileSprite(1350, 800, 100, TAMAÑO_TILE, 'suelito');
-    agua = game.add.tileSprite(1350,1100, 1350, TAMAÑO_TILE, 'agua');
-    player = game.add.sprite(1200, 1000, 'frog');
-    canasta = game.add.sprite(800, 900, 'canastita');
-    canasta2 = game.add.sprite(1352, 852, 'canastita');
-
+    fondo = game.add.tileSprite(0, 300, 10000, 900, 'atlas', 'fondo1.png');
+    fondo2 = game.add.tileSprite(0, 500, 10000, 900, 'atlas', 'fondo2.png');
+    fondo3 = game.add.tileSprite(0, 650, 10000, 900, 'atlas', 'fondo3.png');
+    floor = game.add.tileSprite(0, 1100, 3000, TAMAÑO_TILE, 'atlas', 'suelo_arriba.png');
+    floor3 = game.add.tileSprite(4350, 1100, 1000, TAMAÑO_TILE, 'atlas', 'suelo_arriba.png');
+    floor2 = game.add.tileSprite(1350, 800, 100, TAMAÑO_TILE, 'atlas', 'suelo_arriba.png');
+    agua = game.add.tileSprite(3000,1150, 1350, TAMAÑO_TILE, 'atlas', 'Water.png');
+    player = game.add.sprite(1200, 1000, 'atlas', 'CorrerDer1.png');
+    canasta = game.add.sprite(800, 900, 'atlas', 'Canasta.png');
+    canasta2 = game.add.sprite(1352, 852, 'atlas', 'Canasta.png');
 
     //suelo
     game.world.setBounds(0, -100, 10000, 1124)
@@ -133,8 +113,8 @@ function createGame() {
     player.body.fixedRotation = true;
 
     //Animaciones
-    player.animations.add('mLeft', [3, 4, 5], 5, true);
-    player.animations.add('mRight', [0, 1, 2], 5, true);
+    player.animations.add('mLeft', Phaser.Animation.generateFrameNames('CorrerIzq', 1,3, '.png'), 10, false, false);
+    player.animations.add('mRight', Phaser.Animation.generateFrameNames('CorrerDer', 1,3, '.png'), 10, false,false);
     
     //seguir jugador
     game.camera.follow(player);
@@ -142,45 +122,35 @@ function createGame() {
     //settear la vida
     vidaActual = VIDA_MAXIMA;
 
-    //Cosas de las bolas de fuego
-    fuego = game.add.group();
-    fuego.enableBody = true;
-    fuego.physicsBodyType = Phaser.Physics.ARCADE;
-    fuego.createMultiple(100, 'fireball');
-    fuego.setAll('checkWorldBounds', true);
-    fuego.setAll('outOfBoundsKill', true);
 
-    
     //fisicas de canastas
-    canasta.body.collideWorldBounds = true;
-    canasta2.body.collideWorldBounds = true;
-    canasta2.body.allowGravity = false;
-    game.physics.arcade.overlap(canasta, fuego, hitCanasta, null, this);
-    game.physics.arcade.overlap(canasta2, fuego, hitCanasta, null, this);
-    game.physics.arcade.overlap(player, agua, die, null, this);
-
+    
+    setCanastas();
+    setFireballs();
     crearHUD();
 }
 
 function updateGame() {
-    PlayerController();
     moverCanastas();
     hitCanasta();
     drown();
+    checkCurrentMinigame();
+    if(CurrentMinigame !=2){
+        PlayerController();
+    }
+    else{
+        TimerText();
+    }
 }
 
-function preloadEnd(){ //Cargados los fondos de las pantallas no jugables
-    game.load.image('primerPlano', 'assets/imgs/fondo3.png');
-    game.load.image('segundoPlano', 'assets/imgs/fondo2.png');
-    game.load.image('TercerPlano', 'assets/imgs/fondo1.png');
+function preloadEnd(){
+    game.load.atlasJSONHash('atlas', 'assets/imgs/Atlas.png', 'assets/imgs/Atlas.json')
     game.load.image('botonRestart', 'assets/imgs/button_restart.png');
     game.load.image('botonMenu', 'assets/imgs/button_main-menu.png')
 }
 
-function createEnd(){ //Usa If/else para determinar que texto poner, faltan los botones como en el Main menu
-    fondo3 = game.add.tileSprite(0, 0, 1024, 900, 'tercerPlano');
-    fondo2 = game.add.tileSprite(0, 0, 1024, 900, 'segundoPlano');
-    fondo = game.add.tileSprite(0, 0, 1024, 900, 'primerPlano');
+function createEnd(){
+    fondo = game.add.sprite(0, 0, 'atlas', 'fondoMenu.png');
     if(win){
         WinText = game.add.text(50, 150, 'You Won!', {font: 'Arial',fontSize: '30px',fill: '#e69138'});
     }
@@ -188,7 +158,7 @@ function createEnd(){ //Usa If/else para determinar que texto poner, faltan los 
         LoseText =  game.add.text(500, 150, 'You Lost!', {font: 'Arial',fontSize: '30px',fill: '#e69138'});
     }
     miniText = game.add.text(50, 400, 'You reached minigame ' + CurrentMinigame, {font: 'Arial',fontSize: '30px',fill: '#f2db9b'});
-    scoreText = game.add.text(750, 400,  'Your score is ' + totalScore,{font: 'Arial',fontSize: '30px',fill: '#f2db9b'});
+    scoreText = game.add.text(750, 400,  'Your score is ' + score,{font: 'Arial',fontSize: '30px',fill: '#f2db9b'});
     game.add.button(50, 500, 'botonMenu', mainMenu);
     game.add.button(750, 500, 'botonRestart', startGame);
 }
@@ -255,7 +225,6 @@ function PlayerController(){ //Pilla todos los inputs que afectan al juegueador
     {
         player.body.velocity.x = -150;
         player.animations.play('mLeft', 5, true);
-        facing = 'mLeft';
         fondo3.tilePosition.x += 0.5;
         fondo2.tilePosition.x += 0.1;
     }
@@ -263,26 +232,23 @@ function PlayerController(){ //Pilla todos los inputs que afectan al juegueador
     {
         player.body.velocity.x = 150;
         player.animations.play('mRight', 5, true);
-        facing = 'mRight';
         fondo2.tilePosition.x -= 0.1;
         fondo3.tilePosition.x -= 0.5;
     }
     
-    if (game.input.keyboard.isDown(Phaser.Keyboard.UP) && game.physics.arcade.collide(player, floor))
+    if (game.input.keyboard.isDown(Phaser.Keyboard.UP)&& game.physics.arcade.collide(player, floor))
     {
         player.body.velocity.y = FUERZA_SALTO;
     }
+    game.physics.arcade.collide(player,floor);
 
-    if (game.physics.arcade.collide(player, floor)){
-        player.y = floor.y - player.height-0.5;
-    }
+
     if (game.input.mousePointer.leftButton.justPressed(30)){
         dispararFuego();
     }
 }
 
 function die(){
-    //PONER UN TIMER DE 1segundo
     game.state.start('end');
 }
 
@@ -293,25 +259,25 @@ function damage(){
     }
 }
 
-function winCanasta(){ //ACABAR EL JUEGO BIEN
+function endWin(){
     if (score >= MAXCANASTAS){
         win = true;
-        //PONER UN TIMER DE 1 SEGUNDO
         game.state.start('end');
     }
 }
 
-function mainMenu(){ //IR AL MAIN MENU
+function mainMenu(){
     game.state.start('menu');
 }
 
-function startGame(){ // EMPEZAR EL JUEGO
+function startGame(){
     game.state.start('game');
 }
 
 function goInstructions(){
     game.state.start(aboutState);
 }
+
 function TextosGoBack(){
     GoBackText = game.add.text(25, 600, 'Click anywhere to go to Main Menu', {font: 'Arial',fontSize: '20px', fill: '#f2db9b'});
 }
@@ -334,8 +300,17 @@ function TextoInit(){
     AuthorsText = game.add.text(100, 550, 'A game by Guillem Marrades, Jaime Pérez and Margarita Gaya', {font: 'Arial', fontSize: '30px', fill: '#f2db9b' });
 }
 
-function checkCurrentMinigam(){
-
+function checkCurrentMinigame(){
+    if(player.body.x >1000){
+        CurrentMinigame = 1;
+        if(player.body.x> 2500){
+            CurrentMinigame = 2;
+            if (endedMg2 = true){
+                CurrentMinigame = 3;
+                    CheckWin();
+            }
+        }
+    }
 }
 
 function initGame(){
@@ -348,4 +323,28 @@ function initGame(){
 
 function goAbout(){
     game.state.start('about');
+}
+
+function setFireballs(){
+        fuego = game.add.group();
+        fuego.enableBody = true;
+        fuego.physicsBodyType = Phaser.Physics.ARCADE;
+        fuego.createMultiple(100, 'atlas', 'FireBall.png');
+        fuego.setAll('checkWorldBounds', true);
+        fuego.setAll('outOfBoundsKill', true);
+}
+
+function setCanastas(){
+    canasta.body.collideWorldBounds = true;
+    canasta2.body.collideWorldBounds = true;
+    canasta2.body.allowGravity = false;
+    game.physics.arcade.overlap(canasta, fuego, hitCanasta, null, this);
+    game.physics.arcade.overlap(canasta2, fuego, hitCanasta, null, this);
+}
+
+function CheckWin(){
+    Phaser.Physics.collide(player,floor3, win());
+}
+function TimerText(){
+    
 }
